@@ -1,4 +1,108 @@
 receivers:
+  snmp:
+    collection_interval: 60s
+    endpoint: udp://localhost:161
+    version: v3
+    security_level: auth_priv
+    user: otel
+    auth_type: "MD5"
+  #  auth_password: ${env:SNMP_AUTH_PASSWORD}
+    auth_password: "Password1"
+
+    privacy_type: "DES"
+  #  privacy_password: ${env:SNMP_PRIVACY_PASSWORD}
+    privacy_password: "Password1"
+    resource_attributes:
+      resource_attr.name.1:
+        indexed_value_prefix: probe
+      resource_attr.name.2:
+        oid: "1.1.1.1"
+
+    attributes:
+      attr.name.1:
+        value: a2_new_key
+        enum:
+          - in
+          - out
+      attr.name.2:
+        indexed_value_prefix: device
+      attr.name.3:
+        oid: "2.2.2.2"
+
+    metrics:
+      # This metric will have multiple datapoints wil 1 attribute on each.
+      # Each datapoint will have a (hopefully) different attribute value
+      metric.name.1:
+        unit: 1
+        sum:
+          aggregation: cumulative
+          monotonic: true
+          value_type: int
+        column_oids:
+          - oid: "2.2.2.1"
+            attributes:
+              - name: attr.name.3
+      # This metric will have multiple datapoints with 2 attributes on each.
+      # Each datapoint will have a guaranteed different attribute indexed value for 1 of the attributes.
+      # Half of the datapoints will have the other attribute with a value of "in".
+      # The other half will have the other attribute with a value of "out".
+      metric.name.2:
+        unit: "By"
+        gauge:
+          value_type: int
+        column_oids:
+          - oid: "3.3.3.3"
+            attributes:
+              - name: attr.name.2
+              - name: attr.name.1
+                value: in
+          - oid: "2"
+            attributes:
+              - name: attr.name.2
+              - name: attr.name.1
+                value: out
+      # This metric will have 2 datapoints with 1 attribute on each
+      # One datapoints will have an attribute value of "in".
+      # The other will have an attribute value of "out".
+#      metric.name.3:
+#        unit: "By"
+#        sum:
+#          aggregation: delta
+#          monotonic: false
+#          value_type: double
+#        scalar_oids:
+#          - oid: "4.4.4.4.0"
+#            attributes:
+##                value: in
+  #        - oid: "4.4.4.5.0"
+  #          attributes:
+  #            - name: aattr.name.1
+  #              value: out
+      # This metric will have metrics created with each attached to a different resource.
+      # Each resource will have a resource attribute with a guaranteed unique value based on the index.
+#      metric.name.4:
+#        unit: "By"
+#        gauge:
+#          value_type: int
+#        column_oids:
+#          - oid: "5.5.5.5"
+#            resource_attributes:
+#              - resource_attr.name.1
+      # This metric will have metrics created with each attached to a different resource.
+      # Each resource will have a resource attribute with a hopefully unique value.
+#      metric.name.5:
+#        unit: "By"
+#        gauge:
+#          value_type: int
+#        column_oids:
+#          - oid: "1.1.1.2"
+#            resource_attributes:
+#              - resource_attr.name.2
+
+  syslog:
+    udp:
+      listen_address: "127.0.0.1:514"
+    protocol: rfc5424
   otlp:
     protocols:
       grpc:
@@ -7,7 +111,16 @@ exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
     const_labels:
-      label1: value1
+      job_name: C9K
+
+  prometheusremotewrite:
+    auth:
+      authenticator: basicauth/prw
+    endpoint: https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push
+    tls:
+      insecure: true
+    resource_to_telemetry_conversion:
+      enabled: true # Convert resource attributes to metric labels
 
   logging:
 
@@ -18,7 +131,8 @@ exporters:
   jaeger:
     endpoint: jaeger-all-in-one:14250
     tls:
-      insecure: true
+      insecure: false
+
 
 processors:
   batch:
@@ -29,15 +143,23 @@ extensions:
     endpoint: :1888
   zpages:
     endpoint: :55679
+  basicauth/prw:
+    client_auth:
+      username: 1098625
+      password: _eyJvIjoiOTAzNTg4IiwibiI6ImFwaS10b2tlbi1yZW1vdGUtd3JpdGUtYWxlemEtbWFjIiwiayI6Im5WN1A1VTVWeXozM0tLUEk3YkM5NDNiMyIsIm0iOnsiciI6InByb2QtZXUtd2VzdC0yIn19
 
 service:
-  extensions: [pprof, zpages, health_check]
+  extensions: [pprof, zpages, health_check, basicauth/prw]
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
       exporters: [logging, zipkin, jaeger]
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, snmp]
       processors: [batch]
-      exporters: [logging, prometheus]
+      exporters: [logging, prometheus, prometheusremotewrite]
+    logs:
+        receivers: [otlp, syslog]
+        processors: [batch]
+        exporters: [logging]

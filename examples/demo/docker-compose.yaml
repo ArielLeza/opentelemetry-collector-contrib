@@ -31,6 +31,14 @@ services:
       - "13133:13133" # health_check extension
       - "4317:4317"   # OTLP gRPC receiver
       - "55679:55679" # zpages extension
+      - "55678:55678"
+      - "161:161/udp"
+      - "514:514/udp"
+      - "29018:29018/udp"
+      - "8000:8000"
+      - "4433:443"
+      - "20000:20000"
+
     depends_on:
       - jaeger-all-in-one
       - zipkin-all-in-one
