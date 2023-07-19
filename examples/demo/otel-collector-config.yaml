@@ -121,8 +121,14 @@ exporters:
       insecure: true
     resource_to_telemetry_conversion:
       enabled: true # Convert resource attributes to metric labels
-
   logging:
+    loglevel: debug
+  loki:
+    endpoint: http://localhost:3100/loki/api/v1/push
+    tls:
+      insecure: true
+
+
 
   zipkin:
     endpoint: "http://zipkin-all-in-one:9411/api/v2/spans"
@@ -136,6 +142,32 @@ exporters:
 
 processors:
   batch:
+  attributes:
+    actions:
+    - action: insert
+      key: loki.attribute.labels
+      value: http_status_code
+
+    # the following attributes are added manually here in the example, but would
+    # probably be added by other processors or straight from the source
+    - action: insert
+      key: http_status_code
+      value: 500
+
+  resource:
+    attributes:
+    - action: insert
+      key: loki.resource.labels
+      value: host_name, pod_name
+
+    # the following attributes are added manually here in the example, but would
+    # probably be added by other processors or straight from the source
+    - action: insert
+      key: host_name
+      value: guarana
+    - action: insert
+      key: pod_name
+      value: guarana-pod-01
 
 extensions:
   health_check:
@@ -146,7 +178,7 @@ extensions:
   basicauth/prw:
     client_auth:
       username: 1098625
-      password: _eyJvIjoiOTAzNTg4IiwibiI6ImFwaS10b2tlbi1yZW1vdGUtd3JpdGUtYWxlemEtbWFjIiwiayI6Im5WN1A1VTVWeXozM0tLUEk3YkM5NDNiMyIsIm0iOnsiciI6InByb2QtZXUtd2VzdC0yIn19
+      password: glc_eyJvIjoiOTAzNTg4IiwibiI6ImFwaS10b2tlbi1yZW1vdGUtd3JpdGUtYWxlemEtbWFjIiwiayI6Im5WN1A1VTVWeXozM0tLUEk3YkM5NDNiMyIsIm0iOnsiciI6InByb2QtZXUtd2VzdC0yIn19
 
 service:
   extensions: [pprof, zpages, health_check, basicauth/prw]
@@ -161,5 +193,5 @@ service:
       exporters: [logging, prometheus, prometheusremotewrite]
     logs:
         receivers: [otlp, syslog]
-        processors: [batch]
-        exporters: [logging]
+        processors: [batch, resource, attributes]
+        exporters: [logging, loki]
