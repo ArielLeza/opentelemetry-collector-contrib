@@ -122,9 +122,11 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true # Convert resource attributes to metric labels
   logging:
-    loglevel: debug
+    loglevel: info
   loki:
-    endpoint: http://localhost:3100/loki/api/v1/push
+    auth:
+      authenticator: basicauth/prw2
+    endpoint: http://logs-prod-012.grafana.net/api/prom/push
     tls:
       insecure: true
 
@@ -146,28 +148,35 @@ processors:
     actions:
     - action: insert
       key: loki.attribute.labels
-      value: http_status_code
+      value: http_status_code, event.domain, event.name
 
     # the following attributes are added manually here in the example, but would
     # probably be added by other processors or straight from the source
     - action: insert
       key: http_status_code
       value: 500
-
+    - action: insert
+      key: loki.format
+      value: raw
   resource:
     attributes:
     - action: insert
       key: loki.resource.labels
-      value: host_name, pod_name
+      value: host_name, pod_name, service.name, service.namespace
 
     # the following attributes are added manually here in the example, but would
     # probably be added by other processors or straight from the source
     - action: insert
       key: host_name
       value: guarana
+
     - action: insert
       key: pod_name
       value: guarana-pod-01
+
+    - action: insert
+      key: loki.format
+      value: logfmt
 
 extensions:
   health_check:
@@ -179,9 +188,12 @@ extensions:
     client_auth:
       username: 1098625
       password: glc_eyJvIjoiOTAzNTg4IiwibiI6ImFwaS10b2tlbi1yZW1vdGUtd3JpdGUtYWxlemEtbWFjIiwiayI6Im5WN1A1VTVWeXozM0tLUEk3YkM5NDNiMyIsIm0iOnsiciI6InByb2QtZXUtd2VzdC0yIn19
-
+  basicauth/prw2:
+    client_auth:
+      username: 649137
+      password: glc_eyJvIjoiOTAzNTg4IiwibiI6ImFwaS10b2tlbi1ob3N0ZWQtbG9ncy1hbGV6YS1tYWMiLCJrIjoiekRuNzhtTjF3eHNmYkU2NDE1M1ZIMjFkIiwibSI6eyJyIjoicHJvZC1ldS13ZXN0LTIifX0%3D
 service:
-  extensions: [pprof, zpages, health_check, basicauth/prw]
+  extensions: [pprof, zpages, health_check, basicauth/prw, basicauth/prw2]
   pipelines:
     traces:
       receivers: [otlp]
