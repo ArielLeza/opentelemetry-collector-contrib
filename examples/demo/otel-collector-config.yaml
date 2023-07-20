@@ -123,7 +123,7 @@ exporters:
       enabled: true # Convert resource attributes to metric labels
 
   logging:
-    verbosity: detailed
+    verbosity: normal
     sampling_initial: 10
     sampling_thereafter: 50
 
