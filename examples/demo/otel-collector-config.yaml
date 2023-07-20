@@ -164,10 +164,10 @@ exporters:
     endpoint: jaeger-all-in-one:14250
     tls:
       insecure: true
-    sending_queue:
-      enabled: true
-      num_consumers: 2
-      queue_size: 10
+#    sending_queue:
+#      enabled: true
+#      num_consumers: 2
+#      queue_size: 10
 
 processors:
   batch:
