@@ -19,16 +19,15 @@ receivers:
       resource_attr.name.2:
         oid: "1.1.1.1"
 
-    attributes:
-      attr.name.1:
-        value: a2_new_key
-        enum:
-          - in
-          - out
-      attr.name.2:
-        indexed_value_prefix: device
-      attr.name.3:
-        oid: "2.2.2.2"
+#    attributes:
+##        value: a2_new_key
+  #      enum:
+#          - in
+#          - out
+#      attr.name.2:
+#        indexed_value_prefix: device
+#      attr.name.3:
+#        oid: "2.2.2.2"
 
     metrics:
       # This metric will have multiple datapoints wil 1 attribute on each.
