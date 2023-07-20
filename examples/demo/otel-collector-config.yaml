@@ -126,7 +126,7 @@ exporters:
     verbosity: detailed
     sampling_initial: 10
     sampling_thereafter: 50
-    
+
   loki:
 #    auth:
 #      authenticator: basicauth/prw2
@@ -145,7 +145,10 @@ exporters:
     endpoint: jaeger-all-in-one:14250
     tls:
       insecure: true
-
+    sending_queue:
+      enabled: true
+      num_consumers: 100
+      queue_size: 10000
 
 processors:
   batch:
