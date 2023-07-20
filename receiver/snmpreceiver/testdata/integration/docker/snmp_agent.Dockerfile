@@ -7,7 +7,7 @@ RUN adduser --system --uid 1000 snmpsim
 
 ADD data /usr/local/snmpsim/data
 
-EXPOSE 1024/udp
+EXPOSE :1024/udp
 
 USER snmpsim
 
