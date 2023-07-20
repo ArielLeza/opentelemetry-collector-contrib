@@ -1,8 +1,9 @@
 receivers:
   snmp:
-    collection_interval: 60s
+    collection_interval: 10s
     endpoint: udp://localhost:161
-    version: v3
+    version: v2c
+    community: SAPC1sco123
     security_level: auth_priv
     user: otel
     auth_type: "MD5"
