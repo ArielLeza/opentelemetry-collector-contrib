@@ -36,33 +36,20 @@ receivers:
       metric.name.1:
         unit: 1
         sum:
-          aggregation: cumulative
+          aggregation: percentage
           monotonic: true
           value_type: int
         column_oids:
-          - oid: "2.2.2.1"
+          - oid: "1.3.6.1.2.1.47.1.1.1.1.2.1009"
             attributes:
               - name: attr.name.3
       # This metric will have multiple datapoints with 2 attributes on each.
       # Each datapoint will have a guaranteed different attribute indexed value for 1 of the attributes.
       # Half of the datapoints will have the other attribute with a value of "in".
       # The other half will have the other attribute with a value of "out".
-      metric.name.2:
-        unit: "By"
-        gauge:
-          value_type: int
-        column_oids:
-          - oid: "3.3.3.3"
-            attributes:
-              - name: attr.name.2
-              - name: attr.name.1
-                value: in
-          - oid: "2"
-            attributes:
-              - name: attr.name.2
-              - name: attr.name.1
-                value: out
-      # This metric will have 2 datapoints with 1 attribute on each
+
+
+# 1.3.6.1.2.1.47.1.1.1.1.2.1009 = STRING: "Switch 1 - C9300-24P - Fan 1 Container"      # This metric will have 2 datapoints with 1 attribute on each
       # One datapoints will have an attribute value of "in".
       # The other will have an attribute value of "out".
 #      metric.name.3:
