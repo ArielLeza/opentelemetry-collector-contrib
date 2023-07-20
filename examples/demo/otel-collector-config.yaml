@@ -102,7 +102,7 @@ receivers:
 
   syslog:
     udp:
-      listen_address: "127.0.0.1:514"
+      listen_address: "10.200.0.1:514"
     protocol: rfc5424
   otlp:
     protocols:
