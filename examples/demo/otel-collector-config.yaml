@@ -132,10 +132,10 @@ exporters:
 #      authenticator: basicauth/prw2
     endpoint: https://649137:glc_eyJvIjoiOTAzNTg4IiwibiI6ImFwaS10b2tlbi1ob3N0ZWQtbG9ncy1hbGV6YS1tYWMiLCJrIjoiekRuNzhtTjF3eHNmYkU2NDE1M1ZIMjFkIiwibSI6eyJyIjoicHJvZC1ldS13ZXN0LTIifX0=@logs-prod-012.grafana.net/api/prom/push
 #    tenant_id: "example1"
-    labels:
-      attributes:
-        container_name: ""
-        container_id: ""
+#    labels:
+#      attributes:
+#        container_name: ""
+#        container_id: ""
     tls:
       insecure: true
 #      ca_file: /var/lib/mycert.pem
