@@ -123,8 +123,9 @@ exporters:
       enabled: true # Convert resource attributes to metric labels
 
   logging:
-    loglevel: info
-
+    verbosity: detailed
+    sampling_initial: 10
+    sampling_thereafter: 50
   loki:
 #    auth:
 #      authenticator: basicauth/prw2
@@ -135,8 +136,6 @@ exporters:
         container_name: ""
         container_id: ""
 
-
-
   zipkin:
     endpoint: "http://zipkin-all-in-one:9411/api/v2/spans"
     format: proto
@@ -144,7 +143,7 @@ exporters:
   jaeger:
     endpoint: jaeger-all-in-one:14250
     tls:
-      insecure: false
+      insecure: true
 
 
 processors:
