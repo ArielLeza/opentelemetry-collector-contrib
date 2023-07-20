@@ -1,7 +1,7 @@
 receivers:
   snmp:
     collection_interval: 10s
-    endpoint: udp://localhost:161
+    endpoint: udp://10.200.0.1:161
     version: v2c
     community: SAPC1sco123
 
